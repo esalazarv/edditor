@@ -23,7 +23,7 @@ $.fn.edditor = function(customOptions){
  			{ _value:'Impact',_text:'<font face="Impact">Impact</font>'},
  			{ _value:'Times New Roman',_text:'<font face="Times New Roman">Times New Roman</font>'},
  			{ _value:'Trebuchet MS',_text:'<font face="Trebuchet MS">Trebuchet MS</font>'},
- 			{ _value:'Verdana',_text:'<font face="Verdana">Verdana</font>'} 				
+ 			{ _value:'Verdana',_text:'<font face="Verdana">Verdana</font>'}
  		];
  	var fontSizes = [
  			{ _value:'1',_text:'<font size="1">Texto</font>'},
@@ -54,20 +54,20 @@ $.fn.edditor = function(customOptions){
  		},
  		sizes:{
  			type:'dropdown',
- 			isAdvancedOption:false, 			
+ 			isAdvancedOption:false,
  			buttons:fontSizes,
  			_class:{ trigger:'ed-btn fa fa-text-height', container:'ed-list', button:'ed-list-btn'},
- 			actions:{ 
- 				_default :{ _command:'fontSize' } 
+ 			actions:{
+ 				_default :{ _command:'fontSize' }
  			},
  			callback: 'list'
  		},
  		fontColor:{
  			type:'dropdown',
- 			isAdvancedOption:false, 			
+ 			isAdvancedOption:false,
  			buttons:colors,
  			_class:{ trigger:'ed-btn fa fa-tint', container:'ed-color-picker', button:'ed-color-btn'},
- 			actions:{ 
+ 			actions:{
  				_default:{ _text:'texto',_command:'foreColor'},
  				_backColor:{ _text:'resaltar',_command:'backColor'}
  			},
@@ -174,8 +174,8 @@ $.fn.edditor = function(customOptions){
  			type:'popup',
  			isAdvancedOption:true,
  			_class:{ trigger:'ed-btn fa fa-chain', container:'ed-popup-content', button:'ed-submit-btn'},
- 			actions:{ 
- 				_default :{ _command:'createLink' } 
+ 			actions:{
+ 				_default :{ _command:'createLink' }
  			},
  			callback: 'popUpForLink',
  			_title:'Insertar Link'
@@ -202,7 +202,7 @@ $.fn.edditor = function(customOptions){
 						edditorCommands[sCommand](sValue);
 					}
 					self.edditor.focus();
-					self.cloneFromEdditor();	
+					self.cloneFromEdditor();
 				},
 
 				createDropDown:function(oList){
@@ -213,11 +213,11 @@ $.fn.edditor = function(customOptions){
 						event.preventDefault();
 						$(this).parent().toggleClass('active');
 					});
-					
+
 					oDropdown.attr('data-ed-type','ed-dropdown').addClass('ed-dropdown').append(oBtn);
 
-					if(typeof fn[oList.callback] === 'function') { 
-						oDropdown.append(oDropDownList = fn[oList.callback](oList)); 
+					if(typeof fn[oList.callback] === 'function') {
+						oDropdown.append(oDropDownList = fn[oList.callback](oList));
 					}
 					return oDropdown;
 				},
@@ -230,19 +230,19 @@ $.fn.edditor = function(customOptions){
 						event.preventDefault();
 						$(this).parent().toggleClass('active');
 					});
-					
+
 					oDropdown.attr('data-ed-type','ed-popup').addClass('ed-popup').append(oBtn);
 
-					if(typeof fn[oPopUp.callback] === 'function') { 
-						oDropdown.append(oDropDownList = fn[oPopUp.callback](oPopUp,oPopUp._title)); 
+					if(typeof fn[oPopUp.callback] === 'function') {
+						oDropdown.append(oDropDownList = fn[oPopUp.callback](oPopUp,oPopUp._title));
 					}
 					return oDropdown;
 				},
 
 				createButton:function(oButton,sType){
 					var oBtn = $('<button></button>').attr({
-							'data-ed-cmd':oButton._command,	
-							'data-ed-type': sType		
+							'data-ed-cmd':oButton._command,
+							'data-ed-type': sType
 						});
 					if(typeof oButton._value !== 'undefined'){
 						oBtn.attr('data-ed-value',oButton._value);
@@ -257,7 +257,7 @@ $.fn.edditor = function(customOptions){
 						oBtn.attr('style',oButton._style);
 					}
 					oBtn.click(function(event){
-						event.preventDefault();										
+						event.preventDefault();
 						$('[data-ed-type="ed-dropdown"]').removeClass('active');
 						var sCommand = $(this).attr('data-ed-cmd');
 						var sValue = $(this).attr('data-ed-value');
@@ -280,7 +280,7 @@ $.fn.edditor = function(customOptions){
 				 		};
 				 		var oCustomButton = $.extend({}, oTmpBtn, aListOfButtons[index]);
 						var oButton = fn.createButton(oCustomButton,'ed-button');
-						var oListItem = $('<li></li>').append(oButton); 
+						var oListItem = $('<li></li>').append(oButton);
 						oDropDownList.append(oListItem);
 					}
 					oContainer.append(oDropDownList);
@@ -307,7 +307,7 @@ $.fn.edditor = function(customOptions){
 				 			_value: aColors[index]
 				 		};
 						var oButton = fn.createButton(oColorButton,'ed-color-button');
-						var oListItem = $('<li></li>').append(oButton); 
+						var oListItem = $('<li></li>').append(oButton);
 						oColorList.append(oListItem);
 					}
 					for(index in aComands){
@@ -364,7 +364,7 @@ $.fn.edditor = function(customOptions){
 					oLineText.append('<label>Texto a mostrar</label>').append(oInputForText);
 					oLineCheckbox.append($('<label>').addClass('ed-checkbox').append(oCheckbox).append('abrir en otra pastaña'));
 
-					
+
 					oContainerPopUp.append(oLineLink);
 					oContainerPopUp.append(oLineText);
 					oContainerPopUp.append(oLineCheckbox);
@@ -382,7 +382,7 @@ $.fn.edditor = function(customOptions){
 		var edditorCommands = {
 			toogleHTML:function(){
 				self.edditor.toggle();
-				self.toggle();		
+				self.toggle();
 			},
 			createLink:function(value){
 				alert(link);
@@ -433,7 +433,9 @@ $.fn.edditor = function(customOptions){
 		};
 
 		$(this).init(function(){
-
+			var text = self.val();
+			text = (text.length>0)?text:'<font size="2" face="Arial"><br></font>';
+			self.val(text);
 			self.val('<font size="2" face="Arial"><br></font>'+self.val());
 			self.toolbarContainer = $('<div></div>').addClass('ed-toolbar');
 			self.edditor = $('<div></div>').attr({contenteditable: 'true'}).addClass('edditor');
@@ -454,5 +456,5 @@ $.fn.edditor = function(customOptions){
 			});
 		});
 	});
- 
+
 };
