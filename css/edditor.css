@@ -29,7 +29,7 @@
 	margin: 0px;
 	background: #FFFFFF;
 }
-.ed-toolbar .ed-btn{: 
+.ed-toolbar .ed-btn{:
 	margin: 0px;
 	padding: 5px;
 	padding-top: 0px;
@@ -69,10 +69,12 @@
 	list-style:none;
 	padding: 0px;
 	margin: 0px;
-	height: 100%;
+	max-height: 350px;
+	min-width: 100px;
+	overflow-x: hidden;
 }
 .ed-list>ul>li{
-	width: 100%;
+	width: auto;
 }
 .ed-list>ul>li:hover{
 	background: #F1F1F1;
@@ -83,7 +85,7 @@
 	border: none;
 	outline: none;
 	text-decoration: none;
-	width: 100%;
+	width: auto;
 	height: auto;
 	background: none;
 	text-align: left;
@@ -131,7 +133,7 @@
 	font-size: 15px;
 	font-weight: bold;
 	margin-bottom: 5px;
-	border-bottom: solid 1px #C9C9C9; 
+	border-bottom: solid 1px #C9C9C9;
 }
 .ed-line>label{
 	display: inline-block;
@@ -170,12 +172,12 @@
 	display: inline-block;
 	width: 50%;
 	background: #FFFFFF;
-	border-bottom:solid 3px #FFFFFF; 
+	border-bottom:solid 3px #FFFFFF;
 }
 
 .ed-selector-buttons .ed-color-selector:hover{
 	border-bottom:solid 3px #C7C7C7;
 }
 .ed-selector-buttons>.active, .ed-selector-buttons>.active:hover{
-	border-bottom:solid 3px #1668DC; 
+	border-bottom:solid 3px #1668DC;
 }
