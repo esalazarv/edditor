@@ -21,13 +21,13 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <script>
-    $(document).ready(function(){  
-        // haciendo uso de la parametrización por defecto  
+    $(document).ready(function(){
+        // haciendo uso de la parametrización por defecto
         $("#edditor").edditor({enableAdvancedOptions:true});
  		$("#edditor2").edditor();
         // asignando un color de fondo diferente
         // $("form :input:visible").highlight({background: 'red'});
- 
+
 	});
     </script>
   </head>

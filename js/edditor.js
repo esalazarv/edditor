@@ -209,10 +209,10 @@ $.fn.edditor = function(customOptions){
  			isAdvancedOption:true,
  			_class:{ trigger:'ed-btn fa fa-chain', container:'ed-popup-content', button:'ed-submit-btn'},
  			actions:{
- 				_default :{ _command:'createLink' }
+ 				_default :{ _text:'agregar vínculo' , _command:'insertLink' }
  			},
  			callback: 'popUpForLink',
- 			_title:'Insertar Link'
+ 			_title:'Insertar vínculo'
  		},
  		html:{
  			type:'button',
@@ -292,7 +292,7 @@ $.fn.edditor = function(customOptions){
 					}
 					oBtn.click(function(event){
 						event.preventDefault();
-						$('[data-ed-type="ed-dropdown"]').removeClass('active');
+						$('[data-ed-type="ed-dropdown"], [data-ed-type="ed-popup"]').removeClass('active');
 						var sCommand = $(this).attr('data-ed-cmd');
 						var sValue = $(this).attr('data-ed-value');
 						fn.exec(sCommand,sValue);
@@ -367,8 +367,8 @@ $.fn.edditor = function(customOptions){
 					oContainerOfColors.append(oContainerOfSelectors);
 					return oContainerOfColors;
 				},
-
 				popUpForLink:function(oPopUp,title){
+					var oActions = oPopUp.actions;
 					var oContainerPopUp = $('<div></div>');
 					if(typeof oPopUp._class.container === 'string'){
 						oContainerPopUp.addClass(oPopUp._class.container);
@@ -377,6 +377,7 @@ $.fn.edditor = function(customOptions){
 					var oLineLink = $('<div></div>').addClass('ed-line');
 					var oLineText = $('<div></div>').addClass('ed-line');
 					var oLineCheckbox = $('<div></div>').addClass('ed-line');
+					var oLineButton = $('<div></div>').addClass('ed-line');
 
 					var oInputForLink = $('<input>').attr({
 						'type': 'text',
@@ -392,17 +393,33 @@ $.fn.edditor = function(customOptions){
 						'type': 'checkbox',
 						'data-ed-type':'ed-target-link'
 					});
+					oInputForLink.add(oInputForText).add(oCheckbox).on('click keyup', function(event) {
+						var url = $(this).parents().find('[data-ed-type="ed-link"]');
+						var text = $(this).parents().find('[data-ed-type="ed-text-link"]');
+						var check = $(this).parents().find('[data-ed-type="ed-target-link"]');
+						var a = $('<a>').html(text.val()).attr('href', url.val());
+						(check.is(':checked'))?a.attr('target','_blank'):null;
+						$(this).parents().find('[data-ed-type="ed-submit-btn"]').attr('data-ed-value',a[0].outerHTML);
+					});
+					var oSubmitButton = {
+						_class: (oPopUp._class.button) ? oPopUp._class.button : '',
+						_command: (oPopUp.actions._default._command) ? oPopUp.actions._default._command : '',
+						_text: (oPopUp.actions._default._text) ? oPopUp.actions._default._text : '',
+						_style: '',
+						_value: ''
+					};
 
-					//oLineTitle.append(title);
-					oLineLink.append('<label>Dirección URL</label>').append(oInputForLink);
+					var oButton = fn.createButton(oSubmitButton,'ed-submit-btn');
+					oLineLink.append('<label>url</label>').append(oInputForLink);
 					oLineText.append('<label>Texto a mostrar</label>').append(oInputForText);
-					oLineCheckbox.append($('<label>').addClass('ed-checkbox').append(oCheckbox).append('abrir en otra pastaña'));
+					oLineCheckbox.append($('<label>').addClass('ed-checkbox').append(oCheckbox).append(' abrir en otra pastaña'));
+					oLineButton.append(oButton);
 
-
+					oContainerPopUp.append(oLineTitle);
 					oContainerPopUp.append(oLineLink);
 					oContainerPopUp.append(oLineText);
 					oContainerPopUp.append(oLineCheckbox);
-
+					oContainerPopUp.append(oLineButton);
 					return oContainerPopUp;
 				},
 				raw : function(sHTML, bSelect) {
@@ -472,8 +489,8 @@ $.fn.edditor = function(customOptions){
 				self.edditor.toggle();
 				self.toggle();
 			},
-			createLink:function(value){
-				alert(link);
+			insertLink:function(value){
+				fn.raw(value,false);
 			},
 		};
 
