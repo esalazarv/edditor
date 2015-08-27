@@ -25,14 +25,38 @@ $.fn.edditor = function(customOptions){
  			{ _value:'Trebuchet MS',_text:'<font face="Trebuchet MS">Trebuchet MS</font>'},
  			{ _value:'Verdana',_text:'<font face="Verdana">Verdana</font>'}
  		];
- 	var fontSizes = [
- 			{ _value:'1',_text:'<font size="1">Texto</font>'},
- 			{ _value:'2',_text:'<font size="2">Texto</font>'},
- 			{ _value:'3',_text:'<font size="3">Texto</font>'},
- 			{ _value:'4',_text:'<font size="4">Texto</font>'},
- 			{ _value:'5',_text:'<font size="5">Texto</font>'},
- 			{ _value:'6',_text:'<font size="6">Texto</font>'},
- 			{ _value:'7',_text:'<font size="7">Texto</font>'},
+	var sizesOnPixels = [
+	 			{ _value:'10px',_text:'10px'},
+	 			{ _value:'11px',_text:'11px'},
+	 			{ _value:'12px',_text:'12px'},
+	 			{ _value:'13px',_text:'13px'},
+	 			{ _value:'14px',_text:'14px'},
+	 			{ _value:'15px',_text:'15px'},
+	 			{ _value:'16px',_text:'16px'},
+				{ _value:'17px',_text:'17px'},
+				{ _value:'18px',_text:'18px'},
+				{ _value:'19px',_text:'19px'},
+				{ _value:'20px',_text:'20px'},
+				{ _value:'22px',_text:'22px'},
+				{ _value:'24px',_text:'24px'},
+				{ _value:'26px',_text:'26px'},
+				{ _value:'28px',_text:'28px'},
+				{ _value:'30px',_text:'30px'},
+				{ _value:'35px',_text:'35px'},
+				{ _value:'40px',_text:'40px'},
+				{ _value:'45px',_text:'45px'},
+				{ _value:'50px',_text:'50px'},
+				{ _value:'60px',_text:'60px'},
+				{ _value:'70px',_text:'70px'},
+	 		];
+ 	var headings = [
+ 			{ _value:'1',_text:'<h1>Título</1>'},
+ 			{ _value:'2',_text:'<h2>Título</2>'},
+ 			{ _value:'3',_text:'<h3>Título</3>'},
+ 			{ _value:'4',_text:'<h4>Título</4>'},
+ 			{ _value:'5',_text:'<h5>Título</5>'},
+ 			{ _value:'6',_text:'<h6>Título</6>'},
+ 			{ _value:'7',_text:'<h7>Título</7>'},
  		];
  	var colors = [
 				"#000000","#323232","#424242","#A4A4A4","#D8D8D8","#FFFFFF",
@@ -52,13 +76,23 @@ $.fn.edditor = function(customOptions){
  			actions:{ _default :{_command:'fontName'} },
  			callback:'list',
  		},
- 		sizes:{
+		sizeOnPixels:{
  			type:'dropdown',
  			isAdvancedOption:false,
- 			buttons:fontSizes,
+ 			buttons:sizesOnPixels,
  			_class:{ trigger:'ed-btn fa fa-text-height', container:'ed-list', button:'ed-list-btn'},
  			actions:{
- 				_default :{ _command:'fontSize' }
+ 				_default :{ _command:'sizeOnPixels' }
+ 			},
+ 			callback: 'list'
+ 		},
+ 		heading:{
+ 			type:'dropdown',
+ 			isAdvancedOption:false,
+ 			buttons:headings,
+ 			_class:{ trigger:'ed-btn fa fa-header', container:'ed-list', button:'ed-list-btn'},
+ 			actions:{
+ 				_default :{ _command:'title' }
  			},
  			callback: 'list'
  		},
@@ -175,16 +209,22 @@ $.fn.edditor = function(customOptions){
  			isAdvancedOption:true,
  			_class:{ trigger:'ed-btn fa fa-chain', container:'ed-popup-content', button:'ed-submit-btn'},
  			actions:{
- 				_default :{ _command:'createLink' }
+ 				_default :{ _text:'agregar vínculo' , _command:'insertLink' }
  			},
  			callback: 'popUpForLink',
- 			_title:'Insertar Link'
+ 			_title:'Insertar vínculo'
  		},
  		html:{
  			type:'button',
  			isAdvancedOption:true,
  			_class: 'ed-btn fa fa-code',
- 			_command: 'toogleHTML'
+ 			_command: 'toggleHTML'
+ 		},
+		fullscreen:{
+ 			type:'button',
+ 			isAdvancedOption:false,
+ 			_class: 'ed-btn fa fa-expand',
+ 			_command: 'toggleFullscreen'
  		}
  	};
 	// para cada componente que puede contener el objeto jQuery que invoca a esta función
@@ -258,7 +298,7 @@ $.fn.edditor = function(customOptions){
 					}
 					oBtn.click(function(event){
 						event.preventDefault();
-						$('[data-ed-type="ed-dropdown"]').removeClass('active');
+						$('[data-ed-type="ed-dropdown"], [data-ed-type="ed-popup"]').removeClass('active');
 						var sCommand = $(this).attr('data-ed-cmd');
 						var sValue = $(this).attr('data-ed-value');
 						fn.exec(sCommand,sValue);
@@ -333,8 +373,8 @@ $.fn.edditor = function(customOptions){
 					oContainerOfColors.append(oContainerOfSelectors);
 					return oContainerOfColors;
 				},
-
 				popUpForLink:function(oPopUp,title){
+					var oActions = oPopUp.actions;
 					var oContainerPopUp = $('<div></div>');
 					if(typeof oPopUp._class.container === 'string'){
 						oContainerPopUp.addClass(oPopUp._class.container);
@@ -343,6 +383,7 @@ $.fn.edditor = function(customOptions){
 					var oLineLink = $('<div></div>').addClass('ed-line');
 					var oLineText = $('<div></div>').addClass('ed-line');
 					var oLineCheckbox = $('<div></div>').addClass('ed-line');
+					var oLineButton = $('<div></div>').addClass('ed-line');
 
 					var oInputForLink = $('<input>').attr({
 						'type': 'text',
@@ -358,18 +399,82 @@ $.fn.edditor = function(customOptions){
 						'type': 'checkbox',
 						'data-ed-type':'ed-target-link'
 					});
+					oInputForLink.add(oInputForText).add(oCheckbox).on('click keyup', function(event) {
+						var url = $(this).parents().find('[data-ed-type="ed-link"]');
+						var text = $(this).parents().find('[data-ed-type="ed-text-link"]');
+						var check = $(this).parents().find('[data-ed-type="ed-target-link"]');
+						var a = $('<a>').html(text.val()).attr('href', url.val());
+						(check.is(':checked'))?a.attr('target','_blank'):null;
+						$(this).parents().find('[data-ed-type="ed-submit-btn"]').attr('data-ed-value',a[0].outerHTML);
+					});
+					var oSubmitButton = {
+						_class: (oPopUp._class.button) ? oPopUp._class.button : '',
+						_command: (oPopUp.actions._default._command) ? oPopUp.actions._default._command : '',
+						_text: (oPopUp.actions._default._text) ? oPopUp.actions._default._text : '',
+						_style: '',
+						_value: ''
+					};
 
-					//oLineTitle.append(title);
-					oLineLink.append('<label>Dirección URL</label>').append(oInputForLink);
+					var oButton = fn.createButton(oSubmitButton,'ed-submit-btn');
+					oLineLink.append('<label>url</label>').append(oInputForLink);
 					oLineText.append('<label>Texto a mostrar</label>').append(oInputForText);
-					oLineCheckbox.append($('<label>').addClass('ed-checkbox').append(oCheckbox).append('abrir en otra pastaña'));
+					oLineCheckbox.append($('<label>').addClass('ed-checkbox').append(oCheckbox).append(' abrir en otra pastaña'));
+					oLineButton.append(oButton);
 
-
+					oContainerPopUp.append(oLineTitle);
 					oContainerPopUp.append(oLineLink);
 					oContainerPopUp.append(oLineText);
 					oContainerPopUp.append(oLineCheckbox);
-
+					oContainerPopUp.append(oLineButton);
 					return oContainerPopUp;
+				},
+				raw : function(sHTML, bSelect) {
+				    var sel, range;
+				    if (window.getSelection) {
+				        // IE9 and non-IE
+				        sel = window.getSelection();
+				        if(sel.getRangeAt && sel.rangeCount){
+				            range = sel.getRangeAt(0);
+										text = sel.toString();
+										text = (text.length>0)?text:'&#8291;';
+				            range.deleteContents();
+				            // Range.createContextualFragment() would be useful here but is
+				            // only relatively recently standardized and is not supported in
+				            // some browsers (IE9, for one)
+				            var el = document.createElement("div");
+				            el.innerHTML = $(sHTML).append(text)[0].outerHTML;
+				            var frag = document.createDocumentFragment(), node, lastNode;
+				            while ((node = el.firstChild)) {
+				              lastNode = frag.appendChild(node);
+				            }
+				            var firstNode = frag.firstChild;
+				            range.insertNode(frag);
+
+				            // Preserve the selection
+				            if (lastNode) {
+				              range = range.cloneRange();
+				              range.setStartAfter(lastNode);
+				              if(bSelect) {
+				                range.setStartBefore(firstNode);
+				              }else{
+				                range.collapse(true);
+				              }
+				              sel.removeAllRanges();
+				              sel.addRange(range);
+				            }
+				        }
+				    } else if ( (sel = document.selection) && sel.type != "Control") {
+				        // IE < 9
+				        var originalRange = sel.createRange();
+				        originalRange.collapse(true);
+				        sel.createRange().pasteHTML(sHTML);
+				        if (bSelect) {
+				            range = sel.createRange();
+				            range.setEndPoint("StartToStart", originalRange);
+				            range.select();
+				        }
+				    }
+
 				}
 			};
 
@@ -380,12 +485,21 @@ $.fn.edditor = function(customOptions){
 		 * @return {void} [no retorna valor]
 		 */
 		var edditorCommands = {
-			toogleHTML:function(){
+			sizeOnPixels:function(value){
+				fn.raw('<span data-ed-type="ed-font-size" style="font-size:'+value+'"></span>',false);
+			},
+			title:function(value){
+				fn.raw('<h'+value+'></h'+value+'>',false);
+			},
+			toggleHTML:function(){
 				self.edditor.toggle();
 				self.toggle();
 			},
-			createLink:function(value){
-				alert(link);
+			insertLink:function(value){
+				fn.raw(value,false);
+			},
+			toggleFullscreen:function(){
+				self.mainContainer.toggleClass('ed-fullscreen');
 			}
 		};
 
@@ -433,14 +547,16 @@ $.fn.edditor = function(customOptions){
 		};
 
 		$(this).init(function(){
+			self.mainContainer = $('<div></div>').addClass('ed-container');
+			self.mainContainer.insertBefore(self);
 			var text = self.val();
-			text = (text.length>0)?text:'<font size="2" face="Arial"><br></font>';
+			text = (text.length>0)?text:'&#8291;'+self.val();
 			self.val(text);
-			self.val('<font size="2" face="Arial"><br></font>'+self.val());
 			self.toolbarContainer = $('<div></div>').addClass('ed-toolbar');
 			self.edditor = $('<div></div>').attr({contenteditable: 'true'}).addClass('edditor');
-			$(self.toolbarContainer).insertBefore(self);
-			$(self.edditor).insertBefore(self);
+			self.mainContainer.append(self.toolbarContainer);
+			self.mainContainer.append(self.edditor);
+			self.mainContainer.append(self);
 			self.addClass('ed-code').hide();
 			self.createButtons();
 			self.cloneFromTextarea();
