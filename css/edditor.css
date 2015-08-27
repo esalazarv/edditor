@@ -1,3 +1,17 @@
+.ed-container{
+	width: 100%;
+	height: 100%;
+	border-top: solid 4px #000000;
+}
+.ed-fullscreen{
+	z-index: 2000;
+	position: fixed;
+	margin: 0 !important;
+	top:0;
+	left:0;
+	width:100%;
+	height: 100%;
+}
 .edditor,.ed-code{
 	display:inline-block;
 	width:100%;
@@ -17,6 +31,21 @@
 }
 .ed-textarea{
 	display: none;
+}
+
+.ed-fullscreen>.edditor, .ed-fullscreen>.ed-code{
+	position: absolute;
+	top:0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	padding-top: 60px;
+}
+.ed-fullscreen>.ed-toolbar{
+	z-index: 2500;
+	position: fixed;
+	width: 100%;
+	border-bottom: solid 1px #D7D7D7;
 }
 
 /** Toolbar */

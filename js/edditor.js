@@ -218,7 +218,13 @@ $.fn.edditor = function(customOptions){
  			type:'button',
  			isAdvancedOption:true,
  			_class: 'ed-btn fa fa-code',
- 			_command: 'toogleHTML'
+ 			_command: 'toggleHTML'
+ 		},
+		fullscreen:{
+ 			type:'button',
+ 			isAdvancedOption:false,
+ 			_class: 'ed-btn fa fa-expand',
+ 			_command: 'toggleFullscreen'
  		}
  	};
 	// para cada componente que puede contener el objeto jQuery que invoca a esta función
@@ -485,13 +491,16 @@ $.fn.edditor = function(customOptions){
 			title:function(value){
 				fn.raw('<h'+value+'></h'+value+'>',false);
 			},
-			toogleHTML:function(){
+			toggleHTML:function(){
 				self.edditor.toggle();
 				self.toggle();
 			},
 			insertLink:function(value){
 				fn.raw(value,false);
 			},
+			toggleFullscreen:function(){
+				self.mainContainer.toggleClass('ed-fullscreen');
+			}
 		};
 
 		/* Public methods */
@@ -538,13 +547,16 @@ $.fn.edditor = function(customOptions){
 		};
 
 		$(this).init(function(){
+			self.mainContainer = $('<div></div>').addClass('ed-container');
+			self.mainContainer.insertBefore(self);
 			var text = self.val();
 			text = (text.length>0)?text:'&#8291;'+self.val();
 			self.val(text);
 			self.toolbarContainer = $('<div></div>').addClass('ed-toolbar');
 			self.edditor = $('<div></div>').attr({contenteditable: 'true'}).addClass('edditor');
-			$(self.toolbarContainer).insertBefore(self);
-			$(self.edditor).insertBefore(self);
+			self.mainContainer.append(self.toolbarContainer);
+			self.mainContainer.append(self.edditor);
+			self.mainContainer.append(self);
 			self.addClass('ed-code').hide();
 			self.createButtons();
 			self.cloneFromTextarea();
